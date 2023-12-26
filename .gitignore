@@ -1,0 +1,9 @@
+node_modules
+android/.DS_Store
+android/src/.DS_Store
+android/src/main/.DS_Store
+android/src/main/java/.DS_Store
+android/src/main/java/org/.DS_Store
+android/src/main/java/org/appota/.DS_Store
+ios/IDChipReader/.DS_Store
+ios/.DS_Store

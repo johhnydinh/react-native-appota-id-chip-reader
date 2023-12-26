@@ -1,0 +1,80 @@
+apply plugin: 'com.android.library'
+
+buildscript {
+    ext {
+        buildToolsVersion = "30.0.1"
+        minSdkVersion = 21
+        compileSdkVersion = 31
+        targetSdkVersion = 31
+        ndkVersion = "21.4.7075529"
+    }
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        mavenCentral()
+        flatDir {
+            dirs 'libs'
+        }
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:7.3.1")
+    }
+}
+
+project.ext.react = [
+        cliPath: ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text.trim(),
+]
+
+allprojects {
+    repositories {
+        maven {
+            url("$rootDir/../node_modules/react-native/android")
+        }
+        mavenCentral {
+            content {
+                excludeGroup "com.facebook.react"
+            }
+        }
+        google()
+        maven { url 'https://www.jitpack.io' }
+    }
+}
+
+//apply from: "$rootDir/../node_modules/react-native/react.gradle"
+
+android {
+    ndkVersion rootProject.ext.ndkVersion
+    compileSdkVersion 33
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 32
+        versionName "0.0.32"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+}
+
+dependencies {
+    implementation "com.facebook.react:react-native:+"
+    implementation 'com.android.support:multidex:1.0.3'
+    //noinspection GradleCompatible
+    implementation 'org.jmrtd:jmrtd:0.7.35'
+    implementation 'net.sf.scuba:scuba-sc-android:0.0.23'
+    implementation 'com.madgag.spongycastle:prov:1.58.0.0'
+    implementation 'edu.ucar:jj2000:5.2'
+    implementation 'commons-io:commons-io:2.11.0'
+}
+
+//apply from: file("$rootDir/../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

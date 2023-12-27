@@ -1,6 +1,6 @@
 # react-native-appota-id-chip-reader
 ## Developed by Appota SRD
-![alt text](https://i.ibb.co/XY1S796/SRD-Logo.png)
+![alt text](https://i.ibb.co/Cwnrf9P/SRD-Logo.png)
 
 ## Getting started
 
@@ -16,8 +16,12 @@ In `AndroidManifest.xml` add:
 <uses-feature android:name="android.hardware.nfc" android:required="true" />
 ```
 
-For IOS:
-1. In `Info.plist` add:
+For iOS (iOS >= 13 required):
+1. In project folder, run: 
+```xml
+cd ios && pod install
+```
+2. In `Info.plist` add:
 
 ```xml
 <key>NFCReaderUsageDescription</key>
@@ -39,12 +43,11 @@ For IOS:
 </array>
 ```
 
-2. Go to Targets -> Signing & Capabilities -> +Capability -> Near Field Communication Tag Reading
+3. Go to Targets -> Signing & Capabilities -> +Capability -> Near Field Communication Tag Reading
 
 ## Usage
 ```js
-import IDChipReader from 'react-native-appota-id-chip-reader'
-// { scan, cancel }
+import { startScan, cancelScan } from 'react-native-appota-id-chip-reader'
     async function scan() {
         const {
           comFileEncoded,
@@ -71,7 +74,7 @@ import IDChipReader from 'react-native-appota-id-chip-reader'
           fatherNameInfo,
           motherNameInfo,
           oldIdInfo
-        } = await IDChipReader.scan({
+        } = await startScan({
             documentNumber: '199004922',
             dateOfBirth: '990605',
             dateOfExpiry: '390605'

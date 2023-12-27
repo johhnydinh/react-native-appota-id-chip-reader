@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import NFCPassportReader
-
 @objc(IDChipReader)
+@available(iOS 13, *)
 class IDChipReader: NSObject {
   
   @objc static func requiresMainQueueSetup() -> Bool {

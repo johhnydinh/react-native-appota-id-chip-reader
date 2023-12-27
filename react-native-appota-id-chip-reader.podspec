@@ -10,10 +10,12 @@ Pod::Spec.new do |s|
 
   s.authors      = package['author']
   s.homepage     = package['repository']['url']
-  s.platforms    = { :ios => "9.0", :android => "10.14" }
+  s.platform     = :ios, "13.0"
 
   s.source       = { :git => "https://github.com/johhnydinh/react-native-appota-id-chip-reader", :tag => "v#{s.version}" }
-  s.source_files  = "ios/**/*.{h,m}"
+  s.source_files  = "ios/**/*.{h,m,swift}"
 
   s.dependency 'React-Core'
+  s.dependency "OpenSSL-Universal", '1.1.1100'
+  s.xcconfig     = { 'OTHER_LDFLAGS' => '-weak_framework CryptoKit -weak_framework CoreNFC -weak_framework CryptoTokenKit' }
 end

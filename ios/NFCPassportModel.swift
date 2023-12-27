@@ -73,6 +73,11 @@ public class NFCPassportModel {
         return telephone
     }()
     
+    public var dg13: DataGroup13? {
+        guard let dg13 = dataGroupsRead[.DG13] as? DataGroup13 else {return nil}
+        return dg13
+    }
+    
     /// personal number
     public private(set) lazy var personalNumber : String? = {
         if let dg11 = dataGroupsRead[.DG11] as? DataGroup11,
@@ -146,6 +151,14 @@ public class NFCPassportModel {
         }
     }
 
+    public func getProvince(address: String?) -> String? {
+        let strs = address?.split(separator: ",")
+        if let lastStr = strs?.last {
+            return String(lastStr).trimmingCharacters(in: .whitespaces)
+        }
+        return ""
+    }
+    
 #if os(iOS)
     public var passportImage : UIImage? {
         guard let dg2 = dataGroupsRead[.DG2] as? DataGroup2 else { return nil }
@@ -237,17 +250,38 @@ public class NFCPassportModel {
                     ret["comFileEncoded"] = base64
                 case .SOD:
                     ret["sodFileEncoded"] = base64
-                    if let dsData = self.certificateSigningGroups[.documentSigningCertificate] {
-                        ret["dscFileEncoded"] = Data(dsData.certToPEM().utf8).base64EncodedString()
-                    } else {
-                        ret["dscFileEncoded"] = ""
+                    if let sod = getDataGroup(.SOD) {
+                        do {
+                            let data = Data(sod.body)
+                            let cert = try OpenSSLUtils.getX509CertificatesFromPKCS7( pkcs7Der: data ).first!
+                            ret["dscFileEncoded"] = Data(cert.certToPEM().utf8).base64EncodedString()
+                        } catch let error {
+                            print("Error: \(error)")
+                        }
                     }
                 case .DG1:
                     ret["dg1FileEncoded"] = base64
                 case .DG2:
                     ret["dg2FileEncoded"] = base64
                 case .DG13:
-                    ret["dg13FileEncoded"] = base64
+                    if let dg13 = getDataGroup(.DG13) as? DataGroup13 {
+                        ret["idInfo"] = dg13.eidNumber ?? ""
+                        ret["provinceInfo"] = getProvince(address: dg13.placeOfOrigin ?? "") ?? ""
+                        ret["fullNameInfo"] = dg13.fullName ?? ""
+                        ret["dateOfBirthInfo"] = dg13.dateOfBirth ?? ""
+                        ret["genderInfo"] = dg13.gender ?? ""
+                        ret["nationalityInfo"] = dg13.nationality ?? ""
+                        ret["ethnicityInfo"] = dg13.ethnicity ?? ""
+                        ret["religionInfo"] = dg13.religion ?? ""
+                        ret["placeOfOriginInfo"] = dg13.placeOfOrigin ?? ""
+                        ret["placeOfResidenceInfo"] = dg13.placeOfResidence ?? ""
+                        ret["personalIdentificationInfo"] = dg13.personalIdentification ?? ""
+                        ret["dateOfIssueInfo"] = dg13.dateOfIssue ?? ""
+                        ret["dateOfExpiryInfo"] = dg13.dateOfExpiry ?? ""
+                        ret["fatherNameInfo"] = dg13.fatherName ?? ""
+                        ret["motherNameInfo"] = dg13.motherName ?? ""
+                        ret["oldIdInfo"] = dg13.oldEidNumber ?? ""
+                    }
                 case .DG14:
                     ret["dg14FileEncoded"] = base64
                 case .DG15:
